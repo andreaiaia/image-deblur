@@ -45,15 +45,14 @@ def AT(x, K):
 
 # ---- PUNTO 2 ----
 # Naive deblur function
-
 def f_naive(x):
     X = x.reshape(512, 512)
-    res = 0.5 * (np.linalg.norm(A(X, K1) - noised[0])) ** 2
+    res = 0.5 * (np.linalg.norm(A(X, K1) - noised)) ** 2
     return res
 
 def df_naive(x):
     X = x.reshape(512, 512)
-    res = AT(A(X, K1) - noised[0], K1)
+    res = AT(A(X, K1) - noised, K1)
     res2 = np.reshape(res, 512 * 512)
     return res2
 
@@ -64,12 +63,12 @@ lambda_value = 0.08
 
 def f_reg(x):
     X = x.reshape(512, 512)
-    res = 0.5 * (np.linalg.norm(A(X, K3) - noised[0])) ** 2 + (lambda_value / 2) * ( np.linalg.norm(noised[0]) ** 2 )
+    res = 0.5 * (np.linalg.norm(A(X, K3) - noised)) ** 2 + (lambda_value / 2) * ( np.linalg.norm(noised) ** 2 )
     return res
 
 def df_reg(x):
     X = x.reshape(512, 512)
-    res = AT(A(X, K3) - noised[0], K3) + (lambda_value * noised[0])
+    res = AT(A(X, K3) - noised, K3) + (lambda_value * noised)
     res2 = np.reshape(res, 512*512)
     return res2
 
@@ -142,12 +141,8 @@ PUNTO 1
 Load images and apply blur and noise degradation
 '''
 
-# Loading images
-imgs = (
-    plt.imread('sample1.png').astype(np.float64),
-    plt.imread('sample2.png').astype(np.float64),
-    plt.imread('sample3.png').astype(np.float64)
-)
+# Loading image
+img = plt.imread('sample1.png').astype(np.float64)
 
 # Blur filters generation
 K1 = psf_fft(gaussian_kernel(5, 0.5), 5, x0.shape)
@@ -158,24 +153,16 @@ sigma = 0.05
 noise = np.random.normal(size = x0.shape) * sigma
 
 # Blurring
-blurred = (
-    A(imgs[0], K3),
-    A(imgs[1], K3),
-    A(imgs[2], K3)
-)
+blurred = A(imgs[0], K3)
 # Noising
-noised = (
-    blurred[0] + noise,
-    blurred[1] + noise,
-    blurred[2] + noise
-)
+noised = blurred[0] + noise
 
 '''
 PUNTO 2
 A first deblur attempt - using the method of Conjugated Gradients with the naive function
 '''
 res = minimize(f_naive, x0, method='CG', jac=df_naive)
-img_naive = res.x.reshape(512,512)
+img_naive = res.x.reshape(512, 512)
 
 '''
 PUNTO 3
@@ -190,14 +177,10 @@ img_reg = res.x.reshape(512, 512)
 (img_reg_2, norm_g_list, fun_eval_list, errors, iterations) = custom_minimize(x0, noised[0], 500, 1.e-5)
 
 # ---- PSNR comparison ----
-
-PSNR_noised = metrics.peak_signal_noise_ratio(imgs[0], noised[0])
-
-PSNR_naive = metrics.peak_signal_noise_ratio(imgs[0], img_naive)
-
-PSNR_reg = metrics.peak_signal_noise_ratio(imgs[0], img_reg)
-
-PSNR_reg_2 = metrics.peak_signal_noise_ratio(imgs[0], img_reg_2)
+PSNR_noised = metrics.peak_signal_noise_ratio(img, noised)
+PSNR_naive = metrics.peak_signal_noise_ratio(img, img_naive)
+PSNR_reg = metrics.peak_signal_noise_ratio(img, img_reg)
+PSNR_reg_2 = metrics.peak_signal_noise_ratio(img, img_reg_2)
 
 print("PSNR comparisons: \n", 
     f"\t Noised image: \t\t\t {PSNR_noised} \n", 
@@ -206,26 +189,25 @@ print("PSNR comparisons: \n",
     f"\t Regolarized 2nd method: \t {PSNR_reg_2} \n")
 
 # ---- PLOTTING ----
-
-# Original images plot
+# Original image plot
 plt.subplot(3,2,1)
-plt.imshow(imgs[0], cmap='gray')
+plt.imshow(img, cmap='gray')
 plt.title('Original img')
-
+# Blurred and noised
 plt.subplot(3,2,2)
-plt.imshow(noised[0], cmap='gray')
+plt.imshow(noised, cmap='gray')
 plt.title('Blurred and Noised')
-
+# Naive correction
 plt.subplot(3,2,3)
 plt.imshow(img_naive, cmap='gray')
 plt.title('Naive correction')
-
+# Regolarized correction
 plt.subplot(3,2,4)
 plt.imshow(img_reg, cmap='gray')
 plt.title('Regolarized correction')
-
+# Second regolarized
 plt.subplot(3,2,5)
 plt.imshow(img_reg_2, cmap='gray')
 plt.title('Regolarized 2nd method')
-
+# It's showtime
 plt.show()
