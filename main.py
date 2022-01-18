@@ -350,8 +350,17 @@ Noise's standard deviation:
     sigma5 = 0.05
 
 Lambda value:
-    at will 
+    at will
+    l1 = 0.01
+    l2 = 0.05
+    l3 = 0.08
+    l4 = 0.32
+    l5 = 1
 '''
 
 if __name__ == "__main__":
-    main(5, 0.5, 0.05, 0.08)
+    dim_kernel = 5
+    ker_sigma = 0.5
+    sigma = 0.02
+    lambda_value = 0.01
+    main(dim_kernel, ker_sigma, sigma, lambda_value)
