@@ -43,7 +43,7 @@ def AT(x, K):
     return np.real(fft.ifft2(np.conj(K) * x))
 
 
-def main(dim_kernel, sigma, std_dev, lambda_value):
+def main(dim_kernel, sigma, std_dev, lambda_value, img_name):
     # ---- PUNTO 2 ----
     # Naive deblur function
     def f_naive(x):
@@ -243,7 +243,7 @@ def main(dim_kernel, sigma, std_dev, lambda_value):
     Load images and apply blur and noise degradation
     '''
     # Loading image
-    img = plt.imread('imgs/sample1.png').astype(np.float64)
+    img = plt.imread(f"{img_name}").astype(np.float64)
     # Blur filter generation
     K = psf_fft(gaussian_kernel(dim_kernel, sigma), 5, x0.shape)
     # Noise generation
@@ -296,42 +296,37 @@ def main(dim_kernel, sigma, std_dev, lambda_value):
     PSNR_totvar = metrics.peak_signal_noise_ratio(img, img_totvar)
     MSE_totvar = metrics.mean_squared_error(img, img_totvar)
 
-
-    print("PSNR and MSE comparisons: \n",
-        f"\t Noised image: \t\t\tPSNR -> {PSNR_noised}\t MSE -> {MSE_noised} \n",
-        f"\t Naive Correction: \t\tPSNR -> {PSNR_naive}\t MSE -> {MSE_naive} \n",
-        f"\t Regolarized Correction: \tPSNR -> {PSNR_reg}\t MSE -> {MSE_reg} \n",
-        f"\t Regolarized 2nd method: \tPSNR -> {PSNR_reg_2}\t MSE -> {MSE_reg_2} \n",
-        f"\t Regolarized tot_var method: \tPSNR -> {PSNR_totvar}\t MSE -> {MSE_totvar} \n")
+    print(f"PSNR,{PSNR_noised},{PSNR_naive},{PSNR_reg},{PSNR_reg_2},{PSNR_totvar}")
+    print(f"MSE,{MSE_noised},{MSE_naive},{MSE_reg},{MSE_reg_2},{MSE_totvar}\n")
 
 
     # ---- PLOTTING ----
     # Original image plot
-    plt.subplot(2,3,1)
+"""     plt.subplot(3,2,1)
     plt.imshow(img, cmap='gray')
     plt.title('Original image')
     # Blurred and noised
-    plt.subplot(2,3,2)
+    plt.subplot(3,2,2)
     plt.imshow(noised, cmap='gray')
     plt.title('Blurred and Noised')
     # Naive correction
-    plt.subplot(2,3,3)
+    plt.subplot(3,2,3)
     plt.imshow(img_naive, cmap='gray')
     plt.title('Naive correction')
     # Regolarized correction
-    plt.subplot(2,3,4)
+    plt.subplot(3,2,4)
     plt.imshow(img_reg, cmap='gray')
     plt.title('Regolarized correction')
     # Second regolarized
-    plt.subplot(2,3,5)
+    plt.subplot(3,2,5)
     plt.imshow(img_reg_2, cmap='gray')
-    plt.title('Regolarized 2nd method')
+    plt.title('Regolarized 2nd')
     # tot_var correction
-    plt.subplot(2,3,6)
+    plt.subplot(3,2,6)
     plt.imshow(img_totvar, cmap='gray')
     plt.title('TV correction')
     # It's showtime
-    plt.show()
+    plt.show() """
 
 
 '''
@@ -359,8 +354,16 @@ Lambda value:
 '''
 
 if __name__ == "__main__":
-    dim_kernel = 5
-    ker_sigma = 0.5
-    sigma = 0.02
-    lambda_value = 0.01
-    main(dim_kernel, ker_sigma, sigma, lambda_value)
+    dim_kernel = [5, 7, 9]
+    ker_sigma = [0.5, 1, 1.3]
+    sigma = [0.01, 0.02, 0.03, 0.04, 0.05]
+    lambda_value = [0.01, 0.05, 0.08, 0.32, 1]
+
+    for img in range(1):
+        for i in range(3):
+            for j in range(5):
+                for q in range(5):
+                    iteration = f"K{i+1}_{sigma[j]}_{lambda_value[q]}"
+                    img_name = f"imgs/sample{img+1}.png"
+                    print(f"{iteration},Naive,Regolarized,Regolarized 2nd,TV correction")
+                    main(dim_kernel[i], ker_sigma[i], sigma[j], lambda_value[q], img_name)

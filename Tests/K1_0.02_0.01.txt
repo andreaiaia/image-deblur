@@ -1,6 +1,0 @@
-PSNR and MSE comparisons:
-         Noised image:                  PSNR -> 32.2100897326757         MSE -> 0.0006011613163328887
-         Naive Correction:              PSNR -> 14.892616727953394       MSE -> 0.03241442538468806
-         Regolarized Correction:        PSNR -> 22.99497194518544        MSE -> 0.005017678203760007
-         Regolarized 2nd method:        PSNR -> 23.584382937654347       MSE -> 0.004380883520308068
-         Regolarized tot_var method:    PSNR -> 38.256747169542244       MSE -> 0.00014939129193135747
