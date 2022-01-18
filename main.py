@@ -245,7 +245,7 @@ def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
     # Loading image
     img = plt.imread(f"imgs/sample{img_name}.png").astype(np.float64)
     # Blur filter generation
-    K = psf_fft(gaussian_kernel(dim_kernel, sigma), 5, x0.shape)
+    K = psf_fft(gaussian_kernel(dim_kernel, sigma), dim_kernel, x0.shape)
     # Noise generation
     noise = np.random.normal(size = x0.shape) * std_dev
 
@@ -376,6 +376,3 @@ if __name__ == "__main__":
                 for q in range(5):
                     iteration = f"K{i+1}_{sigma[j]}_{lambda_value[q]}"
                     main(dim_kernel[i], ker_sigma[i], sigma[j], lambda_value[q], iteration, img+1)
-                break
-            break
-        break
