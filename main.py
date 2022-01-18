@@ -43,7 +43,7 @@ def AT(x, K):
     return np.real(fft.ifft2(np.conj(K) * x))
 
 
-def main(dim_kernel, sigma, std_dev, lambda_value, img_name):
+def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
     # ---- PUNTO 2 ----
     # Naive deblur function
     def f_naive(x):
@@ -243,7 +243,7 @@ def main(dim_kernel, sigma, std_dev, lambda_value, img_name):
     Load images and apply blur and noise degradation
     '''
     # Loading image
-    img = plt.imread(f"{img_name}").astype(np.float64)
+    img = plt.imread(f"imgs/sample{img_name}.png").astype(np.float64)
     # Blur filter generation
     K = psf_fft(gaussian_kernel(dim_kernel, sigma), 5, x0.shape)
     # Noise generation
@@ -296,8 +296,13 @@ def main(dim_kernel, sigma, std_dev, lambda_value, img_name):
     PSNR_totvar = metrics.peak_signal_noise_ratio(img, img_totvar)
     MSE_totvar = metrics.mean_squared_error(img, img_totvar)
 
-    print(f"PSNR,{PSNR_noised},{PSNR_naive},{PSNR_reg},{PSNR_reg_2},{PSNR_totvar}")
-    print(f"MSE,{MSE_noised},{MSE_naive},{MSE_reg},{MSE_reg_2},{MSE_totvar}\n")
+
+    output_PSNR = open(f"tests/sample{img_name}PSNR.csv", 'a')
+    output_PSNR.write(f"{iteration},{PSNR_noised},{PSNR_naive},{PSNR_reg},{PSNR_reg_2},{PSNR_totvar}\n")
+    output_PSNR.close()
+    output_MSE = open(f"tests/sample{img_name}MSE.csv", 'a')
+    output_MSE.write(f"{iteration},{MSE_noised},{MSE_naive},{MSE_reg},{MSE_reg_2},{MSE_totvar}\n")
+    output_MSE.close()
 
 
     # ---- PLOTTING ----
@@ -360,10 +365,17 @@ if __name__ == "__main__":
     lambda_value = [0.01, 0.05, 0.08, 0.32, 1]
 
     for img in range(1):
+        output_PSNR = open(f"tests/sample{img+1}PSNR.csv", 'w')
+        output_PSNR.write(f"sample{img+1},Noised,Naive,Regolarized,Regolarized 2nd,TV correction\n")
+        output_PSNR.close()
+        output_MSE = open(f"tests/sample{img+1}MSE.csv", 'w')
+        output_MSE.write(f"sample{img+1},Noised,Naive,Regolarized,Regolarized 2nd,TV correction\n")
+        output_MSE.close()
         for i in range(3):
             for j in range(5):
                 for q in range(5):
                     iteration = f"K{i+1}_{sigma[j]}_{lambda_value[q]}"
-                    img_name = f"imgs/sample{img+1}.png"
-                    print(f"{iteration},Naive,Regolarized,Regolarized 2nd,TV correction")
-                    main(dim_kernel[i], ker_sigma[i], sigma[j], lambda_value[q], img_name)
+                    main(dim_kernel[i], ker_sigma[i], sigma[j], lambda_value[q], iteration, img+1)
+                break
+            break
+        break
