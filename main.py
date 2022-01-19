@@ -258,8 +258,8 @@ def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
     PUNTO 2
     A first deblur attempt - using the method of Conjugated Gradients with the naive function
     '''
-    res = minimize(f_naive, x0, method='CG', jac=df_naive, options={'maxiter': 100})
-    img_naive = res.x.reshape(512, 512)
+    #res = minimize(f_naive, x0, method='CG', jac=df_naive, options={'maxiter': 100})
+    #img_naive = res.x.reshape(512, 512)
 
     '''
     PUNTO 3
@@ -268,8 +268,8 @@ def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
     Then we use another Gradient method seen during the lectures
     '''
     # Regolarized deblur
-    res = minimize(f_reg, x0, method='CG', jac=df_reg, options={'maxiter': 100})
-    img_reg = res.x.reshape(512, 512)
+    #res = minimize(f_reg, x0, method='CG', jac=df_reg, options={'maxiter': 100})
+    #img_reg = res.x.reshape(512, 512)
     # Second regolarized deblur
     (img_reg_2, norm_g_list, fun_eval_list, errors, iterations) = custom_minimize(x0, noised, 100, 1.e-5)
 
@@ -279,7 +279,13 @@ def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
     '''
     (img_totvar, norm_g_list_totvar, fun_eval_list_totvar, errors_totvar, iterations_totvar) = totvar_minimize(x0, noised, 100, 1.e-5)
 
-    
+    plt.plot(norm_g_list.T, 'o-')
+    plt.xlabel('iter')
+    plt.ylabel('Norma Gradiente')
+    plt.title('Iterazioni vs Norma Gradiente')
+    plt.grid()
+
+'''    
     # ---- PSNR and MSE comparison ----
     PSNR_noised = metrics.peak_signal_noise_ratio(img, noised)
     MSE_noised = metrics.mean_squared_error(img, noised)
@@ -334,7 +340,7 @@ def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
     plt.show()
 
 
-'''
+
 Tests values:
 
 Kernel dimension:
