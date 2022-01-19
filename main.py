@@ -279,7 +279,7 @@ def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
     '''
     (img_totvar, norm_g_list_totvar, fun_eval_list_totvar, errors_totvar, iterations_totvar) = totvar_minimize(x0, noised, 100, 1.e-5)
 
-    '''
+    
     # ---- PSNR and MSE comparison ----
     PSNR_noised = metrics.peak_signal_noise_ratio(img, noised)
     MSE_noised = metrics.mean_squared_error(img, noised)
@@ -297,13 +297,13 @@ def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
     MSE_totvar = metrics.mean_squared_error(img, img_totvar)
 
 
-    output_PSNR = open(f"tests/sample{img_name}PSNR.csv", 'a')
+    output_PSNR = open(f"sample{img_name}PSNR.csv", 'a')
     output_PSNR.write(f"{iteration},{PSNR_noised},{PSNR_naive},{PSNR_reg},{PSNR_reg_2},{PSNR_totvar}\n")
     output_PSNR.close()
-    output_MSE = open(f"tests/sample{img_name}MSE.csv", 'a')
+    output_MSE = open(f"sample{img_name}MSE.csv", 'a')
     output_MSE.write(f"{iteration},{MSE_noised},{MSE_naive},{MSE_reg},{MSE_reg_2},{MSE_totvar}\n")
     output_MSE.close()
-    '''
+    
 
     # ---- PLOTTING ----
     # Original image plot
@@ -367,10 +367,10 @@ if __name__ == "__main__":
 
     if all_tests:
         for img in range(10):
-            output_PSNR = open(f"tests/sample{img+1}PSNR.csv", 'w')
+            output_PSNR = open(f"sample{img+1}PSNR.csv", 'w')
             output_PSNR.write(f"sample{img+1},Noised,Naive,Regolarized,Regolarized 2nd,TV correction\n")
             output_PSNR.close()
-            output_MSE = open(f"tests/sample{img+1}MSE.csv", 'w')
+            output_MSE = open(f"sample{img+1}MSE.csv", 'w')
             output_MSE.write(f"sample{img+1},Noised,Naive,Regolarized,Regolarized 2nd,TV correction\n")
             output_MSE.close()
             for i in range(3):
