@@ -279,11 +279,11 @@ def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
     '''
     (img_totvar, norm_g_list_totvar, fun_eval_list_totvar, errors_totvar, iterations_totvar) = totvar_minimize(x0, noised, 100, 1.e-5)
 
-    plt.plot(norm_g_list.T, 'o-')
+    plt.plot(errors_totvar)
     plt.xlabel('iter')
-    plt.ylabel('Norma Gradiente')
-    plt.title('Iterazioni vs Norma Gradiente')
-    plt.grid()
+    plt.ylabel('Andamento errore')
+    plt.title('Iterazioni vs Andamento dell\'errore')
+    plt.show()
 
 '''    
     # ---- PSNR and MSE comparison ----
