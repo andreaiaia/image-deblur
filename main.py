@@ -279,7 +279,7 @@ def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
     '''
     (img_totvar, norm_g_list_totvar, fun_eval_list_totvar, errors_totvar, iterations_totvar) = totvar_minimize(x0, noised, 100, 1.e-5)
 
-
+    '''
     # ---- PSNR and MSE comparison ----
     PSNR_noised = metrics.peak_signal_noise_ratio(img, noised)
     MSE_noised = metrics.mean_squared_error(img, noised)
@@ -303,11 +303,11 @@ def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
     output_MSE = open(f"tests/sample{img_name}MSE.csv", 'a')
     output_MSE.write(f"{iteration},{MSE_noised},{MSE_naive},{MSE_reg},{MSE_reg_2},{MSE_totvar}\n")
     output_MSE.close()
-
+    '''
 
     # ---- PLOTTING ----
     # Original image plot
-"""     plt.subplot(3,2,1)
+    plt.subplot(3,2,1)
     plt.imshow(img, cmap='gray')
     plt.title('Original image')
     # Blurred and noised
@@ -331,7 +331,7 @@ def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
     plt.imshow(img_totvar, cmap='gray')
     plt.title('TV correction')
     # It's showtime
-    plt.show() """
+    plt.show()
 
 
 '''
@@ -363,16 +363,20 @@ if __name__ == "__main__":
     ker_sigma = [0.5, 1, 1.3]
     sigma = [0.01, 0.02, 0.03, 0.04, 0.05]
     lambda_value = [0.01, 0.05, 0.08, 0.32, 1]
+    all_tests = False
 
-    for img in range(10):
-        output_PSNR = open(f"tests/sample{img+1}PSNR.csv", 'w')
-        output_PSNR.write(f"sample{img+1},Noised,Naive,Regolarized,Regolarized 2nd,TV correction\n")
-        output_PSNR.close()
-        output_MSE = open(f"tests/sample{img+1}MSE.csv", 'w')
-        output_MSE.write(f"sample{img+1},Noised,Naive,Regolarized,Regolarized 2nd,TV correction\n")
-        output_MSE.close()
-        for i in range(3):
-            for j in range(5):
-                for q in range(5):
-                    iteration = f"K{i+1}_{sigma[j]}_{lambda_value[q]}"
-                    main(dim_kernel[i], ker_sigma[i], sigma[j], lambda_value[q], iteration, img+1)
+    if all_tests:
+        for img in range(10):
+            output_PSNR = open(f"tests/sample{img+1}PSNR.csv", 'w')
+            output_PSNR.write(f"sample{img+1},Noised,Naive,Regolarized,Regolarized 2nd,TV correction\n")
+            output_PSNR.close()
+            output_MSE = open(f"tests/sample{img+1}MSE.csv", 'w')
+            output_MSE.write(f"sample{img+1},Noised,Naive,Regolarized,Regolarized 2nd,TV correction\n")
+            output_MSE.close()
+            for i in range(3):
+                for j in range(5):
+                    for q in range(5):
+                        iteration = f"K{i+1}_{sigma[j]}_{lambda_value[q]}"
+                        main(dim_kernel[i], ker_sigma[i], sigma[j], lambda_value[q], iteration, img+1)
+    else:
+        main(dim_kernel[2], ker_sigma[2], sigma[4], lambda_value[2], 'K3_0.05_0.08', '10')
