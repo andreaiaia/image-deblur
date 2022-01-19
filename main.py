@@ -364,7 +364,7 @@ if __name__ == "__main__":
     sigma = [0.01, 0.02, 0.03, 0.04, 0.05]
     lambda_value = [0.01, 0.05, 0.08, 0.32, 1]
 
-    for img in range(2):
+    for img in range(10):
         output_PSNR = open(f"tests/sample{img+1}PSNR.csv", 'w')
         output_PSNR.write(f"sample{img+1},Noised,Naive,Regolarized,Regolarized 2nd,TV correction\n")
         output_PSNR.close()
