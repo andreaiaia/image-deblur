@@ -365,14 +365,14 @@ if __name__ == "__main__":
     lambda_value = [0.01, 0.05, 0.08, 0.32, 1]
 
     for img in range(2):
-        output_PSNR = open(f"tests/sample{img+1}PSNR.csv", 'w')
-        output_PSNR.write(f"sample{img+1},Noised,Naive,Regolarized,Regolarized 2nd,TV correction\n")
+        output_PSNR = open(f"tests/sample{img+5}PSNR.csv", 'w')
+        output_PSNR.write(f"sample{img+5},Noised,Naive,Regolarized,Regolarized 2nd,TV correction\n")
         output_PSNR.close()
-        output_MSE = open(f"tests/sample{img+1}MSE.csv", 'w')
-        output_MSE.write(f"sample{img+1},Noised,Naive,Regolarized,Regolarized 2nd,TV correction\n")
+        output_MSE = open(f"tests/sample{img+5}MSE.csv", 'w')
+        output_MSE.write(f"sample{img+5},Noised,Naive,Regolarized,Regolarized 2nd,TV correction\n")
         output_MSE.close()
         for i in range(3):
             for j in range(5):
                 for q in range(5):
                     iteration = f"K{i+1}_{sigma[j]}_{lambda_value[q]}"
-                    main(dim_kernel[i], ker_sigma[i], sigma[j], lambda_value[q], iteration, img+1)
+                    main(dim_kernel[i], ker_sigma[i], sigma[j], lambda_value[q], iteration, img+5)
