@@ -379,4 +379,4 @@ if __name__ == "__main__":
                         iteration = f"K{i+1}_{sigma[j]}_{lambda_value[q]}"
                         main(dim_kernel[i], ker_sigma[i], sigma[j], lambda_value[q], iteration, img+1)
     else:
-        main(dim_kernel[2], ker_sigma[2], sigma[4], lambda_value[2], 'K3_0.05_0.08', '10')
+        main(dim_kernel[2], ker_sigma[2], sigma[4], lambda_value[2], 'K3_0.05_0.08', '1')
