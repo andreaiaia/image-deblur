@@ -5,7 +5,7 @@
 \usepackage{amsfonts}
 \usepackage{graphicx}
 \usepackage{geometry}
-\graphicspath{ {./imgs/plots/} }
+\graphicspath{ {./imgs/plots/}{./imgs/graphs/} }
 \geometry{margin=4cm}
 
 \title{Relazione progetto}
@@ -384,7 +384,61 @@
     
     \newpage
 
-\section{}
+\section{Analisi delle proprietà dai metodi numerici}
+    SCRIVERE QUALCOSA
     
+    \subsection{L'andamento dell'errore}
+    SCRIVERE QUALCOS'ALTRO
+    
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=15cm]{errors}
+    \caption{Andamento dell'errore per il metodo del gradiente con parametro di Tikhonov}
+    \label{graph:1}
+    \end{figure}
+    
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=15cm]{errors_totvar}
+    \caption{Andamento dell'errore per il metodo del gradiente con parametro TV}
+    \label{graph:2}
+    \end{figure}
+    
+    \newpage
+    \subsection{L'andamento della funzione obiettivo}
+    SCRIVERE QUALCOS'ALTRO ANCORA
+    
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=15cm]{fun}
+    \caption{Andamento della funzione per il metodo del gradiente con parametro di Tikhonov}
+    \label{graph:1}
+    \end{figure}
+    
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=15cm]{fun_totvar}
+    \caption{Andamento della funzione per il metodo del gradiente con parametro TV}
+    \label{graph:2}
+    \end{figure}
+
+    \newpage
+    \subsection{L'andamento della norma del gradiente}
+    SCRIVERE QUALCOS'ALTRO ANCORA DIVERSO
+    
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=15cm]{norma}
+    \caption{Andamento della funzione per il metodo del gradiente con parametro di Tikhonov}
+    \label{graph:1}
+    \end{figure}
+    
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=15cm]{norma_totvar}
+    \caption{Andamento della funzione per il metodo del gradiente con parametro TV}
+    \label{graph:2}
+    \end{figure}
+
     
 \end{document}
