@@ -1,0 +1,8 @@
+\contentsline {section}{\numberline {1}Introduzione}{1}{}%
+\contentsline {subsection}{\numberline {1.1}Il dataset}{1}{}%
+\contentsline {subsection}{\numberline {1.2}Gli algoritmi}{1}{}%
+\contentsline {paragraph}{La soluzione naive}{1}{}%
+\contentsline {paragraph}{Regolarizzazione}{1}{}%
+\contentsline {paragraph}{Variazione totale}{2}{}%
+\contentsline {subsection}{\numberline {1.3}I test}{3}{}%
+\contentsline {section}{\numberline {2}Analisi dei risultati}{3}{}%
