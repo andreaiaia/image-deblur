@@ -288,6 +288,6 @@ DEVIAZIONE STANDARD
 ![image3](/tests/4_graphs/.fun_eval_list_K3_0.05_0.08.png)
 ![image4](/tests/4_graphs/.fun_eval_list_totvar_K3_0.05_0.08.png)
 ![image5](/tests/4_graphs/.norm_g_list_K3_0.05_0.08.png)
-![image4](/tests/4_graphs/norm_g_list_totvar_0.05_0.08.png)
+![image6](/tests/4_graphs/norm_g_list_totvar_0.05_0.08.png)
 
 
