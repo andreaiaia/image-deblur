@@ -284,10 +284,10 @@ DEVIAZIONE STANDARD
 ## FASE 4
 
 ![image1](/tests/4_graphs/errors_K3_0.05_0.08.png)
-![image2](/tests/4_graphs/.errors_totvar_K3_0.05_0.08.png)
-![image3](/tests/4_graphs/.fun_eval_list_K3_0.05_0.08.png)
-![image4](/tests/4_graphs/.fun_eval_list_totvar_K3_0.05_0.08.png)
-![image5](/tests/4_graphs/.norm_g_list_K3_0.05_0.08.png)
+![image2](/tests/4_graphs/errors_totvar_K3_0.05_0.08.png)
+![image3](/tests/4_graphs/fun_eval_list_K3_0.05_0.08.png)
+![image4](/tests/4_graphs/fun_eval_list_totvar_K3_0.05_0.08.png)
+![image5](/tests/4_graphs/norm_g_list_K3_0.05_0.08.png)
 ![image6](/tests/4_graphs/norm_g_list_totvar_0.05_0.08.png)
 
 
