@@ -42,250 +42,164 @@ def AT(x, K):
     x = fft.fft2(x)
     return np.real(fft.ifft2(np.conj(K) * x))
 
+# Gradient method seen during lab lecture (4th lab)
+def next_step(x, grad, f_reg):  # backtracking procedure for the choice of the steplength
+    alpha = 1.1
+    rho = 0.5
+    c1 = 0.25
+    p = -grad
+    j = 0
+    jmax = 10
+    while ((f_reg(x.reshape(x.size)+alpha*p) > f_reg(x)+c1*alpha*grad.T@p) and j < jmax):
+        alpha = rho*alpha
+        j += 1
+    if (j > jmax):
+        return -1
+    else:
+        return alpha
 
-def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
-    # ---- PUNTO 2 ----
-    # Naive deblur function
-    def f_naive(x):
-        X = x.reshape(512, 512)
-        res = 0.5 * (np.linalg.norm(A(X, K) - noised)) ** 2
-        return res
+# funzione che implementa il metodo del gradiente
+def custom_minimize(x0, b, MAXITERATION, ABSOLUTE_STOP, f_reg, df_reg):
+    # declare x_k and gradient_k vectors
 
-    def df_naive(x):
-        X = x.reshape(512, 512)
-        res = AT(A(X, K) - noised, K)
-        res2 = np.reshape(res, 512 * 512)
-        return res2
+    norm_grad_list = np.zeros((1, MAXITERATION))
+    function_eval_list = np.zeros((1, MAXITERATION))
+    error_list = np.zeros((1, MAXITERATION))
 
-    # ---- PUNTO 3 ----
-    # Conjugated Gradient method
-    def f_reg(x):
-        X = x.reshape(512, 512)
-        res = 0.5 * (np.linalg.norm(A(X, K) - noised)) ** 2 + (lambda_value / 2) * ( np.linalg.norm(X) ** 2 )
-        return res
+    # initialize first values
+    x_last = np.copy(x0)
 
-    def df_reg(x):
-        X = x.reshape(512, 512)
-        res = AT(A(X, K) - noised, K) + (lambda_value * X)
-        res2 = np.reshape(res, 512*512)
-        return res2
+    k = 0
 
-    # Gradient method seen during lab lecture (4th lab)
-    def next_step(x, grad): # backtracking procedure for the choice of the steplength
-        alpha=1.1
-        rho = 0.5
-        c1 = 0.25
-        p=-grad
-        j=0
-        jmax=10
-        while ((f_reg(x.reshape(x.size)+alpha*p) > f_reg(x)+c1*alpha*grad.T@p) and j<jmax ):
-            alpha= rho*alpha
-            j+=1
-        if (j>jmax):
-            return -1
-        else:
-            return alpha
+    function_eval_list[k] = f_reg(x_last)
+    error_list[k] = np.linalg.norm(x_last - b)
+    norm_grad_list[k] = np.linalg.norm(df_reg(x_last))
 
+    while (np.linalg.norm(df_reg(x_last)) > ABSOLUTE_STOP and k < MAXITERATION - 1):
+        k = k + 1
+        # direction is given by gradient of the last iteration
+        grad = df_reg(x_last)
 
-    def custom_minimize(x0, b, MAXITERATION, ABSOLUTE_STOP):  # funzione che implementa il metodo del gradiente
-        # declare x_k and gradient_k vectors
+        # backtracking step
+        step = next_step(x_last, grad, f_reg)
+        # Fixed step
+        # step = 0.1
 
-        norm_grad_list = np.zeros((1, MAXITERATION))
-        function_eval_list = np.zeros((1, MAXITERATION))
-        error_list = np.zeros((1, MAXITERATION))
+        if (step == -1):
+            print('non convergente')
+            return (k)  # no convergence
 
-        # initialize first values
-        x_last = np.copy(x0)
+        x_last = x_last - (step * grad).reshape(512, 512)
 
-        k = 0
+        function_eval_list[0][k] = f_reg(x_last)
+        error_list[0][k] = np.linalg.norm(x_last - b)
+        norm_grad_list[0][k] = np.linalg.norm(df_reg(x_last))
 
-        function_eval_list[k] = f_reg(x_last)
-        error_list[k] = np.linalg.norm(x_last - b)
-        norm_grad_list[k] = np.linalg.norm(df_reg(x_last))
+    function_eval_list = function_eval_list[0][:k + 1]
+    error_list = error_list[0][:k + 1]
+    norm_grad_list = norm_grad_list[0][:k + 1]
 
-        while (np.linalg.norm(df_reg(x_last)) > ABSOLUTE_STOP and k < MAXITERATION - 1):
-            k = k + 1
-            grad = df_reg(x_last)  # direction is given by gradient of the last iteration
+    return (x_last, norm_grad_list, function_eval_list, error_list, k)
 
-            # backtracking step
-            step = next_step(x_last, grad)
-            # Fixed step
-            # step = 0.1
+# ---- PUNTO 4 ----
+eps = 1e-2
+# Variazione totale
 
-            if (step == -1):
-                print('non convergente')
-                return (k)  # no convergence
+def totvar(x):
+    # Calcola il gradiente di x
+    dx, dy = np.gradient(x)
+    n2 = np.square(dx) + np.square(dy)
 
-            x_last = x_last - (step * grad).reshape(512, 512)
+    # Calcola la variazione totale di x
+    tv = np.sqrt(n2 + eps ** 2).sum()
+    return tv
 
-            function_eval_list[0][k] = f_reg(x_last)
-            error_list[0][k] = np.linalg.norm(x_last - b)
-            norm_grad_list[0][k] = np.linalg.norm(df_reg(x_last))
+# Gradiente della variazione totale
+def grad_totvar(x):
+    # Calcola il numeratore della frazione
+    dx, dy = np.gradient(x)
 
-        function_eval_list = function_eval_list[0][:k + 1]
-        error_list = error_list[0][:k + 1]
-        norm_grad_list = norm_grad_list[0][:k + 1]
+    # Calcola il denominatore della frazione
+    n2 = np.square(dx) + np.square(dy)
+    den = np.sqrt(n2 + eps ** 2)
 
+    # Calcola le due componenti di F dividendo il gradiente per il denominatore
+    Fx = dx / den
+    Fy = dy / den
 
-        return (x_last, norm_grad_list, function_eval_list, error_list, k)
+    # Calcola la derivata orizzontale di Fx
+    dFdx = np.gradient(Fx, axis=0)
 
-    # ---- PUNTO 4 ----
-    eps = 1e-2
-    # Variazione totale
-    def totvar(x):
-        # Calcola il gradiente di x
-        dx, dy = np.gradient(x)
-        n2 = np.square(dx) + np.square(dy)
+    # Calcola la derivata verticale di Fy
+    dFdy = np.gradient(Fy, axis=1)
 
-        # Calcola la variazione totale di x
-        tv = np.sqrt(n2 + eps ** 2).sum()
-        return tv
+    # Calcola la divergenza
+    div = (dFdx + dFdy)
 
-    # Gradiente della variazione totale
-    def grad_totvar(x):
-        # Calcola il numeratore della frazione
-        dx, dy = np.gradient(x)
+    # Restituisci il valore del gradiente della variazione totale
+    return -div
 
-        # Calcola il denominatore della frazione
-        n2 = np.square(dx) + np.square(dy)
-        den = np.sqrt(n2 + eps ** 2)
-
-        # Calcola le due componenti di F dividendo il gradiente per il denominatore
-        Fx = dx / den
-        Fy = dy / den
-
-        # Calcola la derivata orizzontale di Fx
-        dFdx = np.gradient(Fx, axis=0)
-
-        # Calcola la derivata verticale di Fy
-        dFdy = np.gradient(Fy, axis=1)
-
-        # Calcola la divergenza
-        div = (dFdx + dFdy)
-
-        # Restituisci il valore del gradiente della variazione totale
-        return -div
-
-    def f_totvar(x):
-        X = x.reshape(512, 512)
-        res = 0.5 * (np.linalg.norm(A(X, K) - noised)) ** 2 + (lambda_value * totvar(X))
-        return res
-
-    def df_totvar(x):
-        X = x.reshape(512, 512)
-        res = AT(A(X, K) - noised, K) + (lambda_value * grad_totvar(X))
-        res2 = np.reshape(res, 512 * 512)
-        return res2
-
-    def next_step_totvar(x, grad): # backtracking procedure for the choice of the steplength
-        alpha = 1.1
-        rho = 0.5
-        c1 = 0.25
-        p = -grad
-        j = 0
-        jmax = 10
-        while ((f_totvar(x.reshape(x.size) + alpha * p) > f_totvar(x) + c1 * alpha * grad.T@p) and j < jmax):
-            alpha = rho * alpha
-            j += 1
-        if (j > jmax):
-            return -1
-        else:
-            return alpha
-
-    def totvar_minimize(x0, b, MAXITERATION, ABSOLUTE_STOP):  # funzione che implementa il metodo del gradiente
-        # declare x_k and gradient_k vectors
-
-        norm_grad_list = np.zeros((1, MAXITERATION))
-        function_eval_list = np.zeros((1, MAXITERATION))
-        error_list = np.zeros((1, MAXITERATION))
-
-        # initialize first values
-        x_last = np.copy(x0)
-
-        k = 0
-
-        function_eval_list[k] = f_totvar(x_last)
-        error_list[k] = np.linalg.norm(x_last - b)
-        norm_grad_list[k] = np.linalg.norm(df_totvar(x_last))
-
-        while (np.linalg.norm(df_totvar(x_last)) > ABSOLUTE_STOP and k < MAXITERATION - 1):
-            k = k + 1
-            grad = df_totvar(x_last)  # direction is given by gradient of the last iteration
-
-            # backtracking step
-            step = next_step_totvar(x_last, grad)
-            # Fixed step
-            # step = 0.1
-
-            if (step == -1):
-                print('non convergente')
-                return (k)  # no convergence
-
-            x_last = x_last - (step * grad).reshape(512, 512)
-
-            function_eval_list[0][k] = f_totvar(x_last)
-            error_list[0][k] = np.linalg.norm(x_last - b)
-            norm_grad_list[0][k] = np.linalg.norm(df_totvar(x_last))
+# backtracking procedure for the choice of the steplength
+def next_step_totvar(x, grad, f_totvar):
+    alpha = 1.1
+    rho = 0.5
+    c1 = 0.25
+    p = -grad
+    j = 0
+    jmax = 10
+    while ((f_totvar(x.reshape(x.size) + alpha * p) > f_totvar(x) + c1 * alpha * grad.T@p) and j < jmax):
+        alpha = rho * alpha
+        j += 1
+    if (j > jmax):
+        return -1
+    else:
+        return alpha
 
 
-        function_eval_list = function_eval_list[0][:k + 1]
-        error_list = error_list[0][:k + 1]
-        norm_grad_list = norm_grad_list[0][:k + 1]
+# funzione che implementa il metodo del gradiente
+def totvar_minimize(x0, b, MAXITERATION, ABSOLUTE_STOP, f_totvar, df_totvar):
+    # declare x_k and gradient_k vectors
 
+    norm_grad_list = np.zeros((1, MAXITERATION))
+    function_eval_list = np.zeros((1, MAXITERATION))
+    error_list = np.zeros((1, MAXITERATION))
 
-        return (x_last, norm_grad_list, function_eval_list, error_list, k)
+    # initialize first values
+    x_last = np.copy(x0)
 
-    # ---- TESTS ----
-    x0 = np.zeros((512,512))
+    k = 0
 
-    '''
-    PUNTO 1
-    Load images and apply blur and noise degradation
-    '''
-    # Loading image
-    img = plt.imread(f"imgs/sample{img_name}.png").astype(np.float64)
-    # Blur filter generation
-    K = psf_fft(gaussian_kernel(dim_kernel, sigma), dim_kernel, x0.shape)
-    # Noise generation
-    noise = np.random.normal(size = x0.shape) * std_dev
+    function_eval_list[k] = f_totvar(x_last)
+    error_list[k] = np.linalg.norm(x_last - b)
+    norm_grad_list[k] = np.linalg.norm(df_totvar(x_last))
 
-    # Blurring
-    blurred = A(img, K)
-    # Noising
-    noised = blurred + noise
+    while (np.linalg.norm(df_totvar(x_last)) > ABSOLUTE_STOP and k < MAXITERATION - 1):
+        k = k + 1
+        # direction is given by gradient of the last iteration
+        grad = df_totvar(x_last)
 
-    '''
-    PUNTO 2
-    A first deblur attempt - using the method of Conjugated Gradients with the naive function
-    '''
-    #res = minimize(f_naive, x0, method='CG', jac=df_naive, options={'maxiter': 100})
-    #img_naive = res.x.reshape(512, 512)
+        # backtracking step
+        step = next_step_totvar(x_last, grad, f_totvar)
+        # Fixed step
+        # step = 0.1
 
-    '''
-    PUNTO 3
-    A better deblur attempt
-    First we use a regolarized Conjugated Gradient method
-    Then we use another Gradient method seen during the lectures
-    '''
-    # Regolarized deblur
-    #res = minimize(f_reg, x0, method='CG', jac=df_reg, options={'maxiter': 100})
-    #img_reg = res.x.reshape(512, 512)
-    # Second regolarized deblur
-    (img_reg_2, norm_g_list, fun_eval_list, errors, iterations) = custom_minimize(x0, noised, 100, 1.e-5)
+        if (step == -1):
+            print('non convergente')
+            return (k)  # no convergence
 
-    '''
-    PUNTO 4
-    Variazione totale - should give the best deblur of them all
-    '''
-    (img_totvar, norm_g_list_totvar, fun_eval_list_totvar, errors_totvar, iterations_totvar) = totvar_minimize(x0, noised, 100, 1.e-5)
+        x_last = x_last - (step * grad).reshape(512, 512)
 
-    plt.plot(errors_totvar)
-    plt.xlabel('iter')
-    plt.ylabel('Andamento errore')
-    plt.title('Iterazioni vs Andamento dell\'errore')
-    plt.show()
+        function_eval_list[0][k] = f_totvar(x_last)
+        error_list[0][k] = np.linalg.norm(x_last - b)
+        norm_grad_list[0][k] = np.linalg.norm(df_totvar(x_last))
 
-'''    
+    function_eval_list = function_eval_list[0][:k + 1]
+    error_list = error_list[0][:k + 1]
+    norm_grad_list = norm_grad_list[0][:k + 1]
+
+    return (x_last, norm_grad_list, function_eval_list, error_list, k)
+
+def calc_PSNR_MSE(img, noised, img_naive, img_reg, img_reg_2, img_totvar, img_name):
     # ---- PSNR and MSE comparison ----
     PSNR_noised = metrics.peak_signal_noise_ratio(img, noised)
     MSE_noised = metrics.mean_squared_error(img, noised)
@@ -302,59 +216,134 @@ def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
     PSNR_totvar = metrics.peak_signal_noise_ratio(img, img_totvar)
     MSE_totvar = metrics.mean_squared_error(img, img_totvar)
 
-
     output_PSNR = open(f"sample{img_name}PSNR.csv", 'a')
-    output_PSNR.write(f"{iteration},{PSNR_noised},{PSNR_naive},{PSNR_reg},{PSNR_reg_2},{PSNR_totvar}\n")
+    output_PSNR.write(
+        f"{iteration},{PSNR_noised},{PSNR_naive},{PSNR_reg},{PSNR_reg_2},{PSNR_totvar}\n")
     output_PSNR.close()
     output_MSE = open(f"sample{img_name}MSE.csv", 'a')
-    output_MSE.write(f"{iteration},{MSE_noised},{MSE_naive},{MSE_reg},{MSE_reg_2},{MSE_totvar}\n")
+    output_MSE.write(
+        f"{iteration},{MSE_noised},{MSE_naive},{MSE_reg},{MSE_reg_2},{MSE_totvar}\n")
     output_MSE.close()
-    
 
+def plot_figure(img, noised, img_naive, img_reg, img_reg_2, img_totvar):
     # ---- PLOTTING ----
     # Original image plot
-    plt.subplot(3,2,1)
+    plt.subplot(3, 2, 1)
     plt.imshow(img, cmap='gray')
     plt.title('Original image')
     # Blurred and noised
-    plt.subplot(3,2,2)
+    plt.subplot(3, 2, 2)
     plt.imshow(noised, cmap='gray')
     plt.title('Blurred and Noised')
     # Naive correction
-    plt.subplot(3,2,3)
+    plt.subplot(3, 2, 3)
     plt.imshow(img_naive, cmap='gray')
     plt.title('Naive correction')
     # Regolarized correction
-    plt.subplot(3,2,4)
+    plt.subplot(3, 2, 4)
     plt.imshow(img_reg, cmap='gray')
     plt.title('Regolarized correction')
     # Second regolarized
-    plt.subplot(3,2,5)
+    plt.subplot(3, 2, 5)
     plt.imshow(img_reg_2, cmap='gray')
     plt.title('Regolarized 2nd')
     # tot_var correction
-    plt.subplot(3,2,6)
+    plt.subplot(3, 2, 6)
     plt.imshow(img_totvar, cmap='gray')
     plt.title('TV correction')
     # It's showtime
     plt.show()
 
+def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
+    # ---- PUNTO 2 ----
+    # Naive deblur function
+    def f_naive(x):
+        X = x.reshape(512, 512)
+        res = 0.5 * (np.linalg.norm(A(X, K) - noised)) ** 2
+        return res
 
+    def df_naive(x):
+        X = x.reshape(512, 512)
+        res = AT(A(X, K) - noised, K)
+        res2 = np.reshape(res, 512 * 512)
+        return res2
+    # ---- PUNTO 3 ----
+    # Conjugated Gradient method
+    def f_reg(x):
+        X = x.reshape(512, 512)
+        res = 0.5 * (np.linalg.norm(A(X, K) - noised)) ** 2 + \
+            (lambda_value / 2) * (np.linalg.norm(X) ** 2)
+        return res
 
+    def df_reg(x):
+        X = x.reshape(512, 512)
+        res = AT(A(X, K) - noised, K) + (lambda_value * X)
+        res2 = np.reshape(res, 512*512)
+        return res2
+    # ---- PUNTO 4 ----
+    def f_totvar(x):
+        X = x.reshape(512, 512)
+        res = 0.5 * (np.linalg.norm(A(X, K) - noised)) ** 2 + (lambda_value * totvar(X))
+        return res
+
+    def df_totvar(x):
+        X = x.reshape(512, 512)
+        res = AT(A(X, K) - noised, K) + (lambda_value * grad_totvar(X))
+        res2 = np.reshape(res, 512 * 512)
+        return res2
+    
+    # ---- TESTS ----
+    x0 = np.zeros((512,512))
+
+    # PUNTO 1 - Load images and apply blur and noise degradation
+    # Loading image
+    img = plt.imread(f"imgs/sample{img_name}.png").astype(np.float64)
+    # Blur filter generation
+    K = psf_fft(gaussian_kernel(dim_kernel, sigma), dim_kernel, x0.shape)
+    # Noise generation
+    noise = np.random.normal(size = x0.shape) * std_dev
+    # Blurring
+    blurred = A(img, K)
+    # Noising
+    noised = blurred + noise
+
+    # PUNTO 2 - A first deblur attempt - using the method of Conjugated Gradients with the naive function
+    res = minimize(f_naive, x0, method='CG', jac=df_naive, options={'maxiter': 100})
+    img_naive = res.x.reshape(512, 512)
+
+    # PUNTO 3 - A better deblur attempt
+    # First we use a regolarized Conjugated Gradient method
+    res = minimize(f_reg, x0, method='CG', jac=df_reg, options={'maxiter': 100})
+    img_reg = res.x.reshape(512, 512)
+    # Then we use another Gradient method seen during the lectures
+    (img_reg_2, norm_g_list, fun_eval_list, errors, iterations) = custom_minimize(x0, noised, 100, 1.e-5, f_reg, df_reg)
+
+    # PUNTO 4 - Variazione totale - should give the best deblur of them all
+    (img_totvar, norm_g_list_totvar, fun_eval_list_totvar, errors_totvar, iterations_totvar) = totvar_minimize(x0, noised, 100, 1.e-5, f_totvar, df_totvar)
+
+    plt.plot(errors)
+    plt.xlabel('iter')
+    plt.ylabel('Andamento errore')
+    plt.title('Iterazioni vs Andamento dell\'errore')
+    plt.show()
+
+    # Calcolo (e salvataggio su file) di PSNR e MSE
+    #calc_PSNR_MSE(img, noised, img_naive, img_reg, img_reg_2, img_totvar, img_name)
+    # Plotting del risultato
+    #plot_figure(img, noised, img_naive, img_reg, img_reg_2, img_totvar)
+
+''' 
 Tests values:
-
 Kernel dimension:
     K1 = psf_fft(gaussian_kernel(5, 0.5), 7, x0.shape)
     K2 = psf_fft(gaussian_kernel(7, 1), 7, x0.shape)
     K3 = psf_fft(gaussian_kernel(9, 1.3), 9, x0.shape)
-
 Noise's standard deviation:
     sigma1 = 0.01
     sigma2 = 0.02
     sigma3 = 0.03
     sigma4 = 0.04
     sigma5 = 0.05
-
 Lambda value:
     at will
     l1 = 0.01
@@ -385,4 +374,4 @@ if __name__ == "__main__":
                         iteration = f"K{i+1}_{sigma[j]}_{lambda_value[q]}"
                         main(dim_kernel[i], ker_sigma[i], sigma[j], lambda_value[q], iteration, img+1)
     else:
-        main(dim_kernel[2], ker_sigma[2], sigma[4], lambda_value[2], 'K3_0.05_0.08', '1')
+        main(dim_kernel[2], ker_sigma[2], sigma[4], lambda_value[2], 'K3_0.05_0.08', '5')
