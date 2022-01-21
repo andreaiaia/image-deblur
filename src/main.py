@@ -83,12 +83,12 @@ def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
 
 
     # Plotting dei grafici rappresentanti la variazione
-    plt.plot(errors[1:])
-    plt.plot(errors_totvar[1:])
+    plt.plot(norm_g_list[1:])
+    plt.plot(norm_g_list_totvar[1:])
     plt.legend(['Tikhonov', 'TotVar'])
     plt.xlabel('Iterazioni')
-    plt.ylabel('Errore')
-    plt.title('Iterazioni & Andamento dell\'errore')
+    plt.ylabel('Andamento della norma')
+    plt.title('Iterazioni & Andamento della norma del gradiente')
     plt.show()
     plt.savefig('Tikh_TotVar_Geometrica.png', dpi=300)
 
@@ -126,4 +126,4 @@ if __name__ == "__main__":
                         options = f"K{i + 1}_{sigma[j]}_{lambda_value[q]}"
                         main(dim_kernel[i], ker_sigma[i], sigma[j], lambda_value[q], options, img + 1)
     else:
-        main(dim_kernel[0], ker_sigma[0], sigma[4], lambda_value[2], 'K1_0.05_0.08', '5')
+        main(dim_kernel[0], ker_sigma[0], sigma[4], lambda_value[2], 'K1_0.05_0.08', '10')
