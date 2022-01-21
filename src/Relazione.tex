@@ -385,60 +385,77 @@
     \newpage
 
 \section{Analisi delle proprietà dai metodi numerici}
-    SCRIVERE QUALCOSA
+    Analizziamo infine l'andamento del metodo del gradiente con i due parametri di regolarizzazione usati: il parametro di Tikhonov e il parametro Variazione Totale. L'algoritmo è stato eseguito su due immagini del dataset, l'immagine sample5 e l'immagine sample10, e sono stati raccolti i dati commentati di seguito.
     
     \subsection{L'andamento dell'errore}
-    SCRIVERE QUALCOS'ALTRO
+    I dati raccolti sono stati inseriti nei due grafici (Figura \ref{graph:1} e Figura \ref{graph:2}) qui riportati, il primo si riferisce all'esecuzione sull'immagine sample5 mentre il secondo all'esecuzione sull'immagine sample10.
+    
+    Possiamo notare come in entrambe le esecuzioni l'errore del metodo del gradiente con parametro TV è maggiore (si direbbe quasi di una costante) rispetto all'errore del metodo con parametro di Tikhonov. Nel caso della seconda immagine i due andamenti sono quasi identici (a eccezione dello sfasamento). 
+    
+    Dopo una diminuzione iniziale l'errore torna ad aumentare per stabilizzarsi su un andamento asintotico all'incirca a partire dalla 40-esima iterazione.
     
     \begin{figure}[h!]
     \centering
-    \includegraphics[width=15cm]{errors}
-    \caption{Andamento dell'errore per il metodo del gradiente con parametro di Tikhonov}
+    \includegraphics[width=12cm]{errors-sample5}
+    \caption{Andamento dell'errore, confronto fra parametro di Tikhonov e TV su immagine sample5}
     \label{graph:1}
     \end{figure}
     
     \begin{figure}[h!]
     \centering
-    \includegraphics[width=15cm]{errors_totvar}
-    \caption{Andamento dell'errore per il metodo del gradiente con parametro TV}
+    \includegraphics[width=12cm]{errors-sample10}
+    \caption{Andamento dell'errore, confronto fra parametro di Tikhonov e TV su immagine sample10}
     \label{graph:2}
     \end{figure}
     
     \newpage
     \subsection{L'andamento della funzione obiettivo}
-    SCRIVERE QUALCOS'ALTRO ANCORA
+    Anche in questo caso i dati raccolti sono stati inseriti nei due grafici (Figura \ref{graph:3} e Figura \ref{graph:4}) qui riportati, il primo grafico si riferisce all'esecuzione sull'immagine sample5 mentre il secondo a quella sull'immagine sample10.
+    
+    Possiamo notare come in entrambe le esecuzioni l'andamento della funzione da minimizzare nel metodo del gradiente con parametro TV è migliore rispetto all'andamento del metodo con parametro di Tikhonov. 
+    
+    Fin dalle primissime iterazioni la funzione assume un andamento asintotico, indicando come l'eventuale miglioramento del risultato che si può ottenere aumentando il numero di iterazioni è in realtà molto ridotto e che quindi possiamo ottenere un risultato ottimale già con un centinaio di iterazioni.
     
     \begin{figure}[h!]
     \centering
-    \includegraphics[width=15cm]{fun}
-    \caption{Andamento della funzione per il metodo del gradiente con parametro di Tikhonov}
-    \label{graph:1}
+    \includegraphics[width=12cm]{fun-sample5}
+    \caption{Andamento della funzione, confronto fra parametro di Tikhonov e TV su immagine sample5}
+    \label{graph:3}
     \end{figure}
     
     \begin{figure}[h!]
     \centering
-    \includegraphics[width=15cm]{fun_totvar}
-    \caption{Andamento della funzione per il metodo del gradiente con parametro TV}
-    \label{graph:2}
+    \includegraphics[width=12cm]{fun-sample10}
+    \caption{Andamento della funzione, confronto fra parametro di Tikhonov e TV su immagine sample10}
+    \label{graph:4}
     \end{figure}
 
     \newpage
     \subsection{L'andamento della norma del gradiente}
-    SCRIVERE QUALCOS'ALTRO ANCORA DIVERSO
+    Analizziamo infine l'andamento della norma del gradiente della funzione da minimizzare. Anche in questo caso, come nei precedenti, i dati raccolti sono stati inseriti nei due grafici (Figura \ref{graph:5} e Figura \ref{graph:6}) sotto riportati, il primo grafico si riferisce all'esecuzione sull'immagine sample5 mentre il secondo a quella sull'immagine sample10.
+    
+    Possiamo notare come in entrambe le esecuzioni l'andamento del gradiente della funzione è pressapoco simile per entrambi i parametri di regolarizzazione scelti. 
+    
+    La norma del metodo che implementa il parametro TV oscilla maggiormente nelle prime iterazioni rispetto alla norma dell'implementazione con parametro di Tikhonov, ma anche in questo caso è sufficiente superare le 40 iterazioni perché il risultato si stabilizzi ed entrambe le implementazioni assumano un andamento simile.
     
     \begin{figure}[h!]
     \centering
-    \includegraphics[width=15cm]{norma}
-    \caption{Andamento della funzione per il metodo del gradiente con parametro di Tikhonov}
-    \label{graph:1}
+    \includegraphics[width=12cm]{norma-sample5}
+    \caption{Andamento della norma del gradiente, confronto fra parametro di Tikhonov e TV su immagine sample5}
+    \label{graph:5}
     \end{figure}
     
     \begin{figure}[h!]
     \centering
-    \includegraphics[width=15cm]{norma_totvar}
-    \caption{Andamento della funzione per il metodo del gradiente con parametro TV}
-    \label{graph:2}
+    \includegraphics[width=12cm]{norma-sample10}
+    \caption{Andamento della norma del gradiente, confronto fra parametro di Tikhonov e TV su immagine sample10}
+    \label{graph:6}
     \end{figure}
+    
+    \clearpage
+    \listoffigures
+    \newpage
+    \listoftables
 
     
 \end{document}
