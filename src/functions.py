@@ -43,9 +43,9 @@ def AT(x, K):
     return np.real(fft.ifft2(np.conj(K) * x))
 
 
-''' Funzione per implementazione del metodo del gradiente visto a lezione ( quarto laboratorio )'''
+''' Funzioni per implementazione del metodo del gradiente visto a lezione ( quarto laboratorio )'''
 
-# procedura di backtracking per la scelta della dimesione del passo
+# Procedura di backtracking per la scelta della dimensione del passo
 def next_step(x, grad, f_reg):
     alpha = 1.1
     rho = 0.5
@@ -62,7 +62,7 @@ def next_step(x, grad, f_reg):
         return alpha
 
 
-# Funzione minimize implemetata secondo quanto visto a lezione ( quarto laboratorio )
+# Funzione minimize implementata secondo quanto visto a lezione ( quarto laboratorio )
 def custom_minimize(x0, b, MAXITERATION, ABSOLUTE_STOP, f_reg, df_reg):
     norm_grad_list = np.zeros((1, MAXITERATION))
     function_eval_list = np.zeros((1, MAXITERATION))
@@ -106,7 +106,7 @@ def custom_minimize(x0, b, MAXITERATION, ABSOLUTE_STOP, f_reg, df_reg):
 eps = 1e-2
 
 
-'''Funzione utili all'implementazione del nuovo termine di regolarizzazione: Variazione Totale '''
+'''Funzioni utili all'implementazione del nuovo termine di regolarizzazione: Variazione Totale '''
 
 # Variazione totale
 def totvar(x):
@@ -143,7 +143,7 @@ def grad_totvar(x):
     # Restituisci il valore del gradiente della variazione totale
     return -div
 
-# procedura di backtracking per la scelta della dimesione del passo specifica per il nuovo termine di regolarizzazione
+# Procedura di backtracking per la scelta della dimensione del passo specifica per il nuovo termine di regolarizzazione
 def next_step_totvar(x, grad, f_totvar):
     alpha = 1.1
     rho = 0.5
@@ -160,7 +160,7 @@ def next_step_totvar(x, grad, f_totvar):
         return alpha
 
 
-# funzione che implementa il metodo del gradiente come visto a lezione specifica per il nuovo termine di regolarizzazione
+# Funzione che implementa il metodo del gradiente come visto a lezione specifica per il nuovo termine di regolarizzazione
 def totvar_minimize(x0, b, MAXITERATION, ABSOLUTE_STOP, f_totvar, df_totvar):
 
     norm_grad_list = np.zeros((1, MAXITERATION))

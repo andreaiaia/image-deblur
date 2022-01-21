@@ -82,8 +82,6 @@ def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
     (img_totvar, norm_g_list_totvar, fun_eval_list_totvar, errors_totvar, iterations_totvar) = totvar_minimize(x0, noised, 100, 1.e-5, f_totvar, df_totvar)
 
 
-
-
     # Plotting dei grafici rappresentanti la variazione
     plt.plot(errors[1:])
     plt.plot(errors_totvar[1:])
@@ -102,14 +100,15 @@ def main(dim_kernel, sigma, std_dev, lambda_value, iteration, img_name):
 
 
 if __name__ == "__main__":
-    # Utilizzando tale funzione ( main ) possiamo settare i valori sottostanti per effettuare i più disparati test sulle immagine caricate.
+    # Utilizzando tale funzione ( main ) possiamo settare i valori sottostanti per effettuare tutti i test sulle immagine caricate.
 
     dim_kernel = [5, 7, 9]
     ker_sigma = [0.5, 1, 1.3]
     sigma = [0.01, 0.02, 0.03, 0.04, 0.05]
     lambda_value = [0.01, 0.05, 0.08, 0.32, 1]
 
-    # Tale booleano ci permette agevolmente di decidere se effettuare i test su una serie di  con i dati su definiti.
+    # Il booleano serve per attivare o meno i test sull'intero dataset; per eseguire test su una singola immagine del
+    # dataset basta impostarlo a False.
     all_tests = False
 
     if all_tests:
