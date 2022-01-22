@@ -8,7 +8,7 @@
 \graphicspath{ {./imgs/plots/}{./imgs/graphs/} }
 \geometry{margin=4cm}
 
-\title{Relazione progetto}
+\title{Relazione progetto di Calcolo Numerico\\ A.A. 2021/2022}
 \author{Apollonio Francesco\\Bianchi Andrea\\Mazzetti Francesca}
 
 \begin{document}
@@ -29,30 +29,30 @@
         b = Ax + \eta
     \end{align*}
     Con $b$ che è l'immagine corrotta, $x$ l'immagine originale da ricostruire, la matrice $A$ applica il blur gaussiano e $\eta$ è il rumore aggiunto all'immagine sfocata, con distribuzione Gaussiana di media $\mathbb{O}$ e deviazione standard $\sigma$.
-    
+
     \subsection{Il dataset}
     Per eseguire i test richiesti è stato generato un dataset di otto immagini contenenti forme geometriche varie su sfondo nero a cui sono state aggiunte due ulteriori immagini fotografiche, delle quali una, la figura "sample9.png" molto contrastata e con pochi dettagli e l'altra, "sample10.png" meno contrastata ma più dettagliata.
-    
+
     \subsection{Gli algoritmi}
     Per ricostruire le immagini danneggiate sono stati impiegati diversi algoritmi, in modo da poter poi confrontarne l'efficacia.
-    
+
     \paragraph{La soluzione naive}
     Il primo tentativo di ricostruzione è stato fatto utilizzando un algoritmo semplice - per questo detto naive - per risolvere il problema di ottimizzazione:
     \begin{align*}
         x^* = \arg\min_x \frac{1}{2} ||Ax - b||_2^2
     \end{align*}
     In questo caso la funzione da minimizzare è $f(x) = \frac{1}{2} ||Ax - b||_2^2$ e il suo gradiente è $\nabla f(x) = A^TAx - A^Tb$. La funzione è stata implementata usando il metodo dei gradienti coniugati, implementato dalla funzione minimize inclusa nella libreria numpy.
-    
+
     \paragraph{Regolarizzazione}
     Dal momento che la funzione naive recupera sì la nitidezza dell'immagine, ma introduce un rumore elevato, è necessario introdurre un termine di regolarizzazione di Tikhonov, il problema di minimizzazione diventa quindi:
     \begin{align*}
         x^* = \arg\min_x \frac{1}{2} ||Ax - b||_2^2 + \frac{\lambda}{2} ||x||_2^2
     \end{align*}
     La funzione da minimizzare è quindi $f(x) = \frac{1}{2} ||Ax - b||_2^2 + \frac{\lambda}{2} ||x||_2^2$ e il suo gradiente è $\nabla f(x) = A^TAx - A^Tb + \lambda x$.
-    La funzione è stata implementata sia tramite la funzione minimize di numpy che tramite il metodo del gradiente implementato a lezione. Sono poi stati eseguiti test con diversi valori di lambda.
-    
+    La funzione è stata implementata sia tramite la funzione minimize inclusa nella libreria numpy che tramite il metodo del gradiente illustratoci a lezione. Sono poi stati eseguiti test con diversi valori di lambda.
+
     \paragraph{Variazione totale}
-    Un altro termine di regolarizzazione adatto è dato dalla funzione di Variazione Totale. Data $x$ l'immagine di dimensioni $n\times m$, la variazione totale $TV$ di $x$è definita come:
+    Un altro termine di regolarizzazione adatto è dato dalla funzione di Variazione Totale. Data $x$ l'immagine di dimensioni $n\times m$, la variazione totale $TV$ di $x$ è definita come:
     \begin{align*}
         TV(u) = \sum_i^n{\sum_j^m{\sqrt{||\nabla u(i, j)||_2^2 + \epsilon^2}}}
     \end{align*}
@@ -64,25 +64,19 @@
     \begin{align*}
     \nabla f(x) = (A^TAx - A^Tb)  + \lambda \nabla TV(x)
     \end{align*}
-    La funzione è stata implementata usando il metodo del gradiente implementato a lezione e già usato per il punto precedente. Sono stati eseguiti test per diversi valori di $\lambda$.
-    Infine, per risolvere il problema è stato necessario anche calcolare il gradiente della variazione totale, che è dato da:
-    \begin{align*}
-        x^* = \arg\min_x \frac{1}{2} ||Ax - b||_2^2 + \lambda TV(u)
-    \end{align*}
-    il cui gradiente $\nabla f$ è dato da
-    \begin{align*}
-        \nabla f(x) = (A^TAx - A^Tb)  + \lambda \nabla TV(x)
-    \end{align*}
-    
+    La funzione è stata implementata usando il metodo del gradiente visto a lezione e già utilizzato nel precedente punto. Sono stati eseguiti test per diversi valori di $\lambda$.
+
     \subsection{I test}
     Dopo aver applicato il blur gaussiano e il disturbo alle immagini del dataset, abbiamo applicato diversi algoritmi per migliorare la qualità delle immagini. Per ogni immagine abbiamo eseguito un ciclo di test applicando diversi blur gaussiani, diversi valori di deviazione standard per il rumore e diversi valori per il parametro $\lambda$ del termine di regolarizzazione di Tikhonov. In tutti i test i metodi sono stati limitati ad un numero massimo di iterazioni pari a 100, per permettere di elaborare tutte e dieci le immagini in un tempo ragionevole. I valori usati sono riassunti nella tabella 1.
-    \begin{table}
+
+    \medskip
+    \begin{table}[htb]
     \centering
-    \begin{tabular}{||c c c c||} 
+    \begin{tabular}{||c c c c||}
          \hline
-         Dim Kernel & Std dev Sigma Kernel & Std Dev Rumore & Lambda \\ [0.5ex] 
+         Dim Kernel & Std dev Sigma Kernel & Std Dev Rumore & Lambda \\ [0.5ex]
          \hline\hline
-         5 $\times$ 5 & 0.5 & 0.01 & 0.01 \\ 
+         5 $\times$ 5 & 0.5 & 0.01 & 0.01 \\
          \hline
          7 $\times$ 7 & 1 & 0.02 & 0.05 \\
          \hline
@@ -90,22 +84,22 @@
          \hline
          N.A. & N.A. & 0.04 & 0.32 \\
          \hline
-         N.A. & N.A. & 0.05 & 1 \\ [0.2ex] 
+         N.A. & N.A. & 0.05 & 1 \\ [0.2ex]
          \hline
     \end{tabular}
     \caption{Valori assunti dai parametri nei test}
     \label{table:1}
     \end{table}
-    
+
     I dati raccolti possono essere trovati integralmente nella cartella "data" allegata, di seguito commenteremo i risultati più rilevanti.
 
+\section{Analisi dei risultati ottenuti}
+    Dai test effettuati sulle immagini (di seguito riporteremo solo due delle dieci immagini elaborate, le restanti immagini possono essere trovate nella galleria a fine documento) possiamo immediatamente notare come la correzione naive risulti largamente insufficiente ai fini di una ricostruzione accurata della figura di partenza.
 
-\section{Analisi dei risultati}
-    Dai test effettuati sulle immagini (di seguito riporteremo solo due delle dieci immagini elaborate, le restanti immagini possono essere trovate nella galleria a fine documento) possiamo immediatamente notare come la correzione naive è largamente insufficiente ai fini di una ricostruzione accurata dell'immagine. 
-    I due metodi regolarizzati con parametro di Tikhonov danno risultati migliori e simili fra loro, mentre il metodo del gradiente regolarizzato con parametro $TV$ offre un risultato migliore nel caso delle immagini con forme geometriche astratte ma genera immagini non del tutto nitide (quasi come se fosse un effetto "acquerello") nel caso di immagini fotografiche.
-    
-    Ricordiamo comunque che dal momento che i metodi sono iterativi e le funzioni convergenti e che, nel caso dei nostri test, i metodi sono stati limitati a 100 iterazioni, possiamo aspettarci che la qualità dei risultati migliori all'aumentare del numero di iterazioni.
-    
+    I due metodi regolarizzati con parametro di Tikhonov danno risultati ottimi e simili fra loro. Il metodo del gradiente regolarizzato con parametro $TV$ offre, invece, un risultato migliore nel caso di immagini con forme geometriche astratte ma genera figure non del tutto nitide (quasi come se fosse un effetto "acquerello") nel caso di scatti fotografici.
+
+    Ricordiamo, comunque, che dal momento che i metodi utilizzati sono iterativi, le funzioni convergenti e che, nel caso dei nostri test, i metodi sono stati limitati a 100 iterazioni, possiamo aspettarci un aumento della qualità con l'aumentare del numero di iterazioni.
+
     \newpage
     \begin{figure}[h!]
     \includegraphics[width=14cm]{sample5}
@@ -119,12 +113,12 @@
     \newpage
 
 \section{PSNR e MSE}
-    L'analisi delle misure di PSNR e MSE va in contrasto con quanto osservato nelle immagini analizzate poc'anzi, in quando il valore di PSNR dell'algoritmo che implementa il metodo del gradiente con il parametro di regolarizzazione $TV$ è sempre superiore a quello degli altri algoritmi, nonostante come già riportato le immagini fotografiche risultino qualitativamente inferiori (almeno nel caso di un massimo di 100 iterazioni).
-    
-    Nel fare i test per raccogliere i dati sui valori di PSNR e MSE, abbiamo variato la dimensione del kernel, il valore di $\sigma$, la deviazione standard del rumore e il valore del parametro di regolarizzazione usando i valori indicati nella tabella \ref{table:1}. Di conseguenza abbiamo ottenuto 75 diversi valori del PSNR e del MSE per ogni algoritmo usato su una singola immagine, quindi 750 diversi valori per l'intero dataset. Dal momento che una tabella di simili dimensioni richiederebbe troppo spazio all'interno di questo documento, riportiamo in questa sede solo le tabelle con le medie dei valori ottenuti fra le 10 immagini di alcuni test scelti, mentre per i dati completi rimandiamo ai file .csv allegati.
-    
-    I parametri sono indicati, per motivi di spazio, con la notazione KX\_Y\_Z; dove X indica la dimensione e il valore di sigma del kernel (K1 equivale ad un kernel di dimensione $5\times5$ con valore di $\sigma=0.5$, K2 equivale ad una dimensione di $7\times7$ con $\sigma=1$ e K3 indica un kernel di dimensione $9\times9$ con $\sigma=1.3$), Y indica il valore della deviazione standard del rumore e Z il valore del parametro $\lambda$
-    
+    L'analisi delle misure di PSNR e MSE va in contrasto con quanto osservato nelle immagini analizzate poc'anzi. Risulta, infatti, che il valore di PSNR dell'algoritmo che implementa il metodo del gradiente con il parametro di regolarizzazione $TV$ sia sempre superiore a quello degli altri algoritmi, nonostante, come già riportato, le immagini fotografiche ottenute con lo stesso metodo risultino, se pur all'apparenza, qualitativamente inferiori (almeno nel caso di un massimo di 100 iterazioni).
+
+    Nel fare i test volti al raccoglimento dei dati sulla vairiazione di PSNR e MSE, abbiamo alterato la dimensione del kernel, il valore di $\sigma$, la deviazione standard del rumore e il valore del parametro di regolarizzazione usando i valori riportati nella tabella \ref{table:1}. Di conseguenza abbiamo ottenuto 75 differenti valori di PSNR ed MSE per ogni algoritmo applicato su una singola immagine, per un totale di 750 valori per l'intero dataset. Dal momento che una tabella di simili dimensioni richiederebbe troppo spazio all'interno di questo documento, riportiamo in questa sede solo le tabelle con le medie dei valori ottenuti fra le 10 immagini di alcuni test scelti, mentre per i dati completi rimandiamo ai file .csv allegati.
+
+    I parametri sono indicati, per motivi di spazio, con la notazione KX\_Y\_Z; dove X indica la dimensione e il valore di sigma del kernel (K1 equivale ad un kernel di dimensione $5\times5$ con valore di $\sigma=0.5$, K2 equivale ad una dimensione di $7\times7$ con $\sigma=1$ e K3 indica un kernel di dimensione $9\times9$ con $\sigma=1.3$), Y indica il valore della deviazione standard del rumore e Z il valore del parametro $\lambda$.
+
     \begin{table}[!ht]
     \centering
     \begin{tabular}{|l|l|l|}
@@ -149,7 +143,7 @@
     \caption{PSNR medi in test scelti - 1 di 2}
     \label{table:2}
     \end{table}
-    
+
     \begin{table}[!ht]
     \centering
     \begin{tabular}{|l|l|l|}
@@ -175,7 +169,7 @@
     \label{table:3}
     \end{table}
     \newpage
-    
+
     \begin{table}[!ht]
     \centering
     \begin{tabular}{|l|l|l|}
@@ -229,9 +223,9 @@
 
 \section{Medie e Deviazioni standard}
     Abbiamo poi calcolato, per alcuni parametri fissati, i valori medi e la deviazione standard di PSNR e MSE calcolati sull'intero set di immagini, di seguito riportati.
-    
+
     \subsection{PSNR - medie}
-    
+
     \begin{table}[!ht]
     \centering
     \begin{tabular}{|l|l|l|}
@@ -249,7 +243,7 @@
     \caption{PSNR medi - 1 di 2}
     \label{table:6}
     \end{table}
-    
+
     \begin{table}[!ht]
     \centering
     \begin{tabular}{|l|l|l|}
@@ -267,9 +261,10 @@
     \caption{PSNR medi - 2 di 2}
     \label{table:7}
     \end{table}
-    
-    \subsection{PSNR - deviazioni standard}
-    
+
+    \newpage
+    \subsection{PSNR - Deviazioni standard}
+
     \begin{table}[!ht]
     \centering
     \begin{tabular}{|l|l|l|}
@@ -287,7 +282,7 @@
     \caption{PSNR deviazioni standard - 1 di 2}
     \label{table:8}
     \end{table}
-    
+
     \begin{table}[!ht]
     \centering
     \begin{tabular}{|l|l|l|}
@@ -306,9 +301,9 @@
     \label{table:9}
     \end{table}
     \newpage
-    
+
     \subsection{MSE - medie}
-    
+
     \begin{table}[!ht]
     \centering
     \begin{tabular}{|l|l|l|}
@@ -326,7 +321,7 @@
     \caption{MSE medi - 1 di 2}
     \label{table:10}
     \end{table}
-    
+
     \begin{table}[!ht]
     \centering
     \begin{tabular}{|l|l|l|}
@@ -344,8 +339,9 @@
     \caption{MSE medi - 2 di 2}
     \label{table:11}
     \end{table}
-    
-    \subsection{MSE - deviazioni standard}
+
+    \newpage
+    \subsection{MSE - Deviazioni standard}
     \begin{table}[!ht]
     \centering
     \begin{tabular}{|l|l|l|}
@@ -363,7 +359,7 @@
     \caption{MSE deviazioni standard - 1 di 2}
     \label{table:12}
     \end{table}
-    
+
     \begin{table}[!ht]
     \centering
     \begin{tabular}{|l|l|l|}
@@ -381,48 +377,50 @@
     \caption{MSE deviazioni standard - 2 di 2}
     \label{table:13}
     \end{table}
-    
+
     \newpage
 
 \section{Analisi delle proprietà dai metodi numerici}
-    Analizziamo infine l'andamento del metodo del gradiente con i due parametri di regolarizzazione usati: il parametro di Tikhonov e il parametro Variazione Totale. L'algoritmo è stato eseguito su due immagini del dataset, l'immagine sample5 e l'immagine sample10, e sono stati raccolti i dati commentati di seguito.
-    
+    Analizziamo, infine, l'andamento del metodo del gradiente con i due parametri di regolarizzazione usati: il parametro di Tikhonov e il parametro Variazione Totale. L'algoritmo è stato eseguito su due immagini del dataset: l'immagine sample5 (figure geometriche) e l'immagine sample10 (scatto fotografico).
+    I dati raccolti sono commentati di seguito.
+
     \subsection{L'andamento dell'errore}
     I dati raccolti sono stati inseriti nei due grafici (Figura \ref{graph:1} e Figura \ref{graph:2}) qui riportati, il primo si riferisce all'esecuzione sull'immagine sample5 mentre il secondo all'esecuzione sull'immagine sample10.
-    
-    Possiamo notare come in entrambe le esecuzioni l'errore del metodo del gradiente con parametro TV è maggiore (si direbbe quasi di una costante) rispetto all'errore del metodo con parametro di Tikhonov. Nel caso della seconda immagine i due andamenti sono quasi identici (a eccezione dello sfasamento). 
-    
+
+    Possiamo notare come in entrambe le esecuzioni l'errore del metodo del gradiente con parametro TV è maggiore (si direbbe quasi di un valore costante) rispetto all'errore del metodo con parametro di Tikhonov. Nel caso della seconda immagine i due andamenti sono quasi identici (a eccezione dello sfasamento).
+
     Dopo una diminuzione iniziale l'errore torna ad aumentare per stabilizzarsi su un andamento asintotico all'incirca a partire dalla 40-esima iterazione.
-    
+
     \begin{figure}[h!]
     \centering
     \includegraphics[width=12cm]{errors-sample5}
     \caption{Andamento dell'errore, confronto fra parametro di Tikhonov e TV su immagine sample5}
     \label{graph:1}
     \end{figure}
-    
+
     \begin{figure}[h!]
     \centering
     \includegraphics[width=12cm]{errors-sample10}
     \caption{Andamento dell'errore, confronto fra parametro di Tikhonov e TV su immagine sample10}
     \label{graph:2}
     \end{figure}
-    
+
     \newpage
     \subsection{L'andamento della funzione obiettivo}
-    Anche in questo caso i dati raccolti sono stati inseriti nei due grafici (Figura \ref{graph:3} e Figura \ref{graph:4}) qui riportati, il primo grafico si riferisce all'esecuzione sull'immagine sample5 mentre il secondo a quella sull'immagine sample10.
-    
-    Possiamo notare come in entrambe le esecuzioni l'andamento della funzione da minimizzare nel metodo del gradiente con parametro TV è migliore rispetto all'andamento del metodo con parametro di Tikhonov. 
-    
-    Fin dalle primissime iterazioni la funzione assume un andamento asintotico, indicando come l'eventuale miglioramento del risultato che si può ottenere aumentando il numero di iterazioni è in realtà molto ridotto e che quindi possiamo ottenere un risultato ottimale già con un centinaio di iterazioni.
-    
+    Anche in questo caso i dati raccolti sono stati inseriti nei due grafici (Figura \ref{graph:3} e Figura \ref{graph:4}) qui riportati: il primo grafico si riferisce all'esecuzione sull'immagine sample5 mentre il secondo a quella sull'immagine sample10.
+
+    Possiamo notare come in entrambe le esecuzioni l'andamento della funzione da minimizzare nel metodo del gradiente con parametro TV è migliore rispetto all'andamento del metodo con parametro di Tikhonov.
+
+    Fin dalle primissime iterazioni, inoltre, la funzione assume un andamento chiaramente asintotico.
+    Questo ci permette di dedurre come un auspicabile miglioramento del risultato,  ottenibile da un aumento delle iterazioni, è in realtà relativamente ridotto; possiamo infatti ottenere delle figure ottimali già con un centinaio di iterazioni.
+
     \begin{figure}[h!]
     \centering
     \includegraphics[width=12cm]{fun-sample5}
     \caption{Andamento della funzione, confronto fra parametro di Tikhonov e TV su immagine sample5}
     \label{graph:3}
     \end{figure}
-    
+
     \begin{figure}[h!]
     \centering
     \includegraphics[width=12cm]{fun-sample10}
@@ -430,32 +428,105 @@
     \label{graph:4}
     \end{figure}
 
-    \newpage
+\cleardoublepage
+
+\cleardoublepage
     \subsection{L'andamento della norma del gradiente}
-    Analizziamo infine l'andamento della norma del gradiente della funzione da minimizzare. Anche in questo caso, come nei precedenti, i dati raccolti sono stati inseriti nei due grafici (Figura \ref{graph:5} e Figura \ref{graph:6}) sotto riportati, il primo grafico si riferisce all'esecuzione sull'immagine sample5 mentre il secondo a quella sull'immagine sample10.
-    
-    Possiamo notare come in entrambe le esecuzioni l'andamento del gradiente della funzione è pressapoco simile per entrambi i parametri di regolarizzazione scelti. 
-    
+    Analizziamo, infine, l'andamento della norma del gradiente della funzione da minimizzare. Anche in questo caso, come nei precedenti, i dati raccolti sono stati inseriti nei due grafici (Figura \ref{graph:5} e Figura \ref{graph:6}) sotto riportati, il primo grafico si riferisce all'esecuzione sull'immagine sample5 mentre il secondo a quella sull'immagine sample10.
+
+
+    Possiamo notare come in entrambe le esecuzioni l'andamento del gradiente della funzione è pressapoco simile per entrambi i parametri di regolarizzazione scelti.
+
     La norma del metodo che implementa il parametro TV oscilla maggiormente nelle prime iterazioni rispetto alla norma dell'implementazione con parametro di Tikhonov, ma anche in questo caso è sufficiente superare le 40 iterazioni perché il risultato si stabilizzi ed entrambe le implementazioni assumano un andamento simile.
-    
+
     \begin{figure}[h!]
     \centering
     \includegraphics[width=12cm]{norma-sample5}
     \caption{Andamento della norma del gradiente, confronto fra parametro di Tikhonov e TV su immagine sample5}
     \label{graph:5}
     \end{figure}
-    
-    \begin{figure}[h!]
+
+%
+\makeatletter
+\setlength{\@fptop}{0pt}
+\makeatother
+%
+    \begin{figure}[t!]
     \centering
     \includegraphics[width=12cm]{norma-sample10}
     \caption{Andamento della norma del gradiente, confronto fra parametro di Tikhonov e TV su immagine sample10}
     \label{graph:6}
     \end{figure}
-    
+
     \clearpage
     \listoffigures
     \newpage
     \listoftables
 
-    
+\cleardoublepage
+    \centering
+    \huge
+    Galleria
+\cleardoublepage
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=14cm]{sample1}
+    \end{figure}
+    \newpage
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=14cm]{sample2}
+    \end{figure}
+    \newpage
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=14cm]{sample3}
+    \end{figure}
+    \newpage
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=14cm]{sample4}
+    \end{figure}
+    \newpage
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=14cm]{sample5}
+    \end{figure}
+    \newpage
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=14cm]{sample6}
+    \end{figure}
+    \newpage
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=14cm]{sample7}
+    \end{figure}
+    \newpage
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=14cm]{sample8}
+    \end{figure}
+    \newpage
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=14cm]{sample9}
+    \end{figure}
+    \newpage
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=14cm]{sample10}
+    \end{figure}
+    \newpage
+
 \end{document}
