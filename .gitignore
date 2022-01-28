@@ -135,3 +135,6 @@ dmypy.json
 *.synctex.gz
 *.toc
 *.fls
+
+# Mac shit
+*.DS_STORE
